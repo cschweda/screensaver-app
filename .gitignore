@@ -69,3 +69,10 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+# Image files
+public/images/*
+!public/images/.gitkeep
+!public/images/original/
+public/images/original/*
+!public/images/original/.gitkeep

@@ -1,0 +1,296 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+
+/* Thumbnail container grid */
+#thumbnail-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    justify-items: center;
+}
+
+/* Thumbnail styles */
+.thumbnail-item {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-item:hover {
+    transform: scale(1.05);
+}
+
+.thumbnail-item.selected {
+    border-color: #3b82f6; /* blue-500 */
+}
+
+/* Thumbnail image container for positioning spinner */
+.thumbnail-image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #111827; /* Dark background */
+}
+
+/* Thumbnail image */
+.thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Show full image without cropping */
+    display: block; /* Ensure proper display */
+    margin: 0 auto; /* Center the image */
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Thumbnail loading spinner */
+.thumbnail-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
+
+.spinner-border {
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+.spinner-circle {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #3b82f6; /* blue-500 */
+    animation: thumbnail-spin 1s linear infinite;
+}
+
+@keyframes thumbnail-spin {
+    to { transform: rotate(360deg); }
+}
+
+.thumbnail-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.thumbnail-checkbox:checked {
+    background-color: #3b82f6;
+}
+
+.thumbnail-checkbox:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.thumbnail-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px;
+    font-size: 0.7rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+body {
+    font-family: 'Inter', sans-serif; /* Use Inter font */
+    overscroll-behavior: none; /* Prevent pull-to-refresh */
+}
+
+/* Ensure fullscreen element covers everything */
+#fullscreen-container:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color, #2e2e2e); /* 18% grey */
+}
+#fullscreen-container:fullscreen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color, #2e2e2e); /* 18% grey */
+}
+
+/* Style for the image display */
+#image-display {
+    max-width: 95vw; /* Use viewport width to ensure it fits on all screens */
+    max-height: 85vh; /* Limit height to leave space for title and info */
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Scale image while preserving aspect ratio */
+    display: block; /* Remove extra space below image */
+    margin: 0 auto; /* Center horizontally */
+    position: relative; /* Ensure proper stacking */
+}
+
+/* Corner hover zones */
+.corner-zone {
+    position: absolute;
+    width: 80px; /* Increased size for easier hover */
+    height: 80px; /* Increased size for easier hover */
+    /* background-color: rgba(255, 0, 0, 0.1); */ /* Uncomment for debugging */
+    z-index: 100; /* Ensure they are above the image */
+}
+#top-left-zone { top: 0; left: 0; }
+#top-right-zone { top: 0; right: 0; }
+#bottom-left-zone { bottom: 0; left: 0; }
+#bottom-right-zone { bottom: 0; right: 0; }
+
+/* Corner menu */
+#corner-menu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem; /* rounded-lg */
+    padding: 1rem; /* p-4 */
+    z-index: 110; /* Above corner zones */
+    display: none; /* Hidden by default */
+    color: white;
+}
+
+/* Hide controls when in fullscreen */
+#fullscreen-container:fullscreen #controls-container {
+    display: none;
+}
+/* Show fullscreen elements only when in fullscreen */
+#fullscreen-elements {
+    display: none; /* Hidden initially */
+}
+#fullscreen-container:fullscreen #fullscreen-elements {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative; /* Needed for absolute positioning of children */
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+/* Also handle webkit fullscreen for Safari */
+#fullscreen-container:-webkit-full-screen #fullscreen-elements {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Container for the image to allow for proper centering */
+#image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+/* Image transition styles */
+#image-display {
+    transition: opacity 0.5s ease-in-out;
+}
+.fade-out {
+    opacity: 0;
+}
+.fade-in {
+    opacity: 1;
+}
+
+/* Ensure the image container is centered in fullscreen mode */
+#fullscreen-container:fullscreen #image-container,
+#fullscreen-container:-webkit-full-screen #image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Crossfade transition styles */
+#image-display {
+    position: relative;
+    z-index: 1;
+}
+#fullscreen-elements.crossfade-active #image-display {
+    opacity: 0;
+}
+#image-display-next {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 90vh;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 5; /* Ensure it's above the main image */
+}
+#fullscreen-elements.crossfade-active #image-display-next {
+    opacity: 1;
+}
+
+/* Style for the message box */
+#message-box {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 200;
+    display: none; /* Hidden by default */
+    font-size: 0.9rem;
+}
+
+/* Loading indicator */
+#loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    display: none; /* Hidden by default */
+    z-index: 150;
+    pointer-events: none; /* Allow clicks to pass through */
+    margin: 0; /* Ensure no margins affect positioning */
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
