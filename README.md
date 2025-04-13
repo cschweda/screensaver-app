@@ -73,6 +73,59 @@ yarn build
 
 The built files will be in the `dist` directory and can be deployed to any static hosting service.
 
+## Configuration
+
+All application settings are centralized in the `src/config.js` file. You can customize the application by modifying these settings.
+
+### Image Settings
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `images.directory` | `/images/` | Default directory for images |
+| `images.supportedFormats` | `['.jpg', '.jpeg', '.png', '.webp', '.gif']` | Supported image file formats |
+| `images.maxSizeMB` | `1` | Maximum size in MB before compression |
+| `images.compressionQuality` | `80` | JPEG compression quality (0-100) |
+
+### Display Settings
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `display.defaultDuration` | `5` | Default display duration in seconds |
+| `display.minDuration` | `1` | Minimum allowed duration in seconds |
+| `display.defaultBackgroundColor` | `'#2e2e2e'` | Default background color |
+| `display.fadeTransitionDuration` | `250` | Fade transition duration in milliseconds |
+| `display.defaultRandomizeOrder` | `false` | Default randomize order setting |
+
+### UI Settings
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `ui.thumbnailSize` | `200` | Thumbnail size in pixels |
+| `ui.menuHideDelay` | `300` | Menu hide delay in milliseconds |
+| `ui.messageDisplayDuration` | `3000` | Message display duration in milliseconds |
+| `ui.emptyFolderWarning` | `'Please add images to the /images/ folder to use the screensaver.'` | Empty folder warning message |
+
+### How to Modify Configuration
+
+To customize the application, edit the `src/config.js` file:
+
+```javascript
+// Example: Changing the thumbnail size and display duration
+const config = {
+  // ... other settings
+  display: {
+    defaultDuration: 8, // Change to 8 seconds
+    // ... other display settings
+  },
+  ui: {
+    thumbnailSize: 250, // Change to larger thumbnails
+    // ... other UI settings
+  }
+};
+```
+
+After making changes to the configuration, restart the development server for the changes to take effect.
+
 ## Usage Guide
 
 ### Starting the Screensaver

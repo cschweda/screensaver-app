@@ -1,8 +1,13 @@
 /**
- * Image Compression Utility
+ * @fileoverview Image Compression Utility
  *
  * This script compresses images in the /images folder that are larger than 1MB.
  * Original images are preserved in /images/original/ directory.
+ * The compression maintains original dimensions while reducing file size.
+ *
+ * @module compress-images
+ * @author Chris Schweda
+ * @version 1.0.0
  *
  * Usage: yarn compress
  */
@@ -17,15 +22,38 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Try to load the config file
+let config;
+try {
+    const configModule = await import('../src/config.js');
+    config = configModule.default;
+    console.log('Loaded configuration from config.js');
+} catch (error) {
+    console.warn('Could not load config.js, using default values:', error.message);
+    // Default configuration if config.js cannot be loaded
+    config = {
+        images: {
+            directory: '/images/',
+            supportedFormats: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
+            maxSizeMB: 1,
+            compressionQuality: 80
+        }
+    };
+}
+
 // Configuration
 const IMAGE_DIR = path.join(__dirname, '../public/images');
 const ORIGINAL_DIR = path.join(IMAGE_DIR, 'original');
-const MAX_SIZE_MB = 1; // Maximum size in MB before compression
+const MAX_SIZE_MB = config.images.maxSizeMB; // Maximum size in MB before compression
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-const QUALITY = 80; // JPEG quality (0-100)
-const SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.webp'];
+const QUALITY = config.images.compressionQuality; // JPEG quality (0-100)
+const SUPPORTED_FORMATS = config.images.supportedFormats;
 
-// Ensure directories exist
+/**
+ * Ensures that the required directories exist, creating them if necessary
+ * @function ensureDirectoriesExist
+ * @returns {void}
+ */
 function ensureDirectoriesExist() {
     if (!fs.existsSync(IMAGE_DIR)) {
         fs.mkdirSync(IMAGE_DIR, { recursive: true });
@@ -38,19 +66,35 @@ function ensureDirectoriesExist() {
     }
 }
 
-// Check if a file is an image based on extension
+/**
+ * Checks if a file is an image based on its extension
+ * @function isImage
+ * @param {string} filename - The filename to check
+ * @returns {boolean} - True if the file is an image, false otherwise
+ */
 function isImage(filename) {
     const ext = path.extname(filename).toLowerCase();
     return SUPPORTED_FORMATS.includes(ext);
 }
 
-// Get file size in MB
+/**
+ * Gets the file size in megabytes
+ * @function getFileSizeMB
+ * @param {string} filePath - The path to the file
+ * @returns {number} - The file size in megabytes
+ */
 function getFileSizeMB(filePath) {
     const stats = fs.statSync(filePath);
     return stats.size / (1024 * 1024);
 }
 
-// Compress an image
+/**
+ * Compresses an image if it's larger than the maximum size
+ * @async
+ * @function compressImage
+ * @param {string} imagePath - The path to the image file
+ * @returns {Promise<boolean>} - True if the image was compressed, false otherwise
+ */
 async function compressImage(imagePath) {
     const filename = path.basename(imagePath);
     const originalSize = getFileSizeMB(imagePath);
@@ -119,7 +163,12 @@ async function compressImage(imagePath) {
     }
 }
 
-// Process all images in the directory
+/**
+ * Processes all images in the directory, compressing those that are larger than the maximum size
+ * @async
+ * @function processImages
+ * @returns {Promise<void>}
+ */
 async function processImages() {
     ensureDirectoriesExist();
 

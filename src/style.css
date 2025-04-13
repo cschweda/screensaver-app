@@ -7,7 +7,7 @@
 /* Thumbnail container grid */
 #thumbnail-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--thumbnail-size, 200px), 1fr));
     grid-gap: 20px;
     justify-items: center;
 }
@@ -15,8 +15,8 @@
 /* Thumbnail styles */
 .thumbnail-item {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: var(--thumbnail-size, 200px);
+    height: var(--thumbnail-size, 200px);
     overflow: hidden;
     border-radius: 0.5rem;
     border: 2px solid transparent;

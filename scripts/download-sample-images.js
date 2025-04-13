@@ -1,7 +1,14 @@
 /**
- * Download Sample Images Script
+ * @fileoverview Download Sample Images Script
  *
  * This script downloads sample large images for testing the compression utility.
+ * It fetches high-quality images from Unsplash and saves them to the public/images directory.
+ *
+ * @module download-sample-images
+ * @author Chris Schweda
+ * @version 1.0.0
+ *
+ * Usage: yarn download-samples
  */
 
 // Use ES modules
@@ -18,8 +25,18 @@ const __dirname = path.dirname(__filename);
 
 const pipelineAsync = promisify(pipeline);
 
-// Configuration
+/**
+ * Configuration constants
+ * @constant {string} IMAGES_DIR - Path to the images directory
+ */
 const IMAGES_DIR = path.join(__dirname, '../public/images');
+
+/**
+ * Sample images to download
+ * @constant {Array<Object>} SAMPLE_IMAGES - Array of sample image objects
+ * @property {string} name - Filename to save the image as
+ * @property {string} url - URL to download the image from
+ */
 const SAMPLE_IMAGES = [
     {
         name: 'large1.jpg',
@@ -43,7 +60,11 @@ const SAMPLE_IMAGES = [
     }
 ];
 
-// Ensure the images directory exists
+/**
+ * Ensures that the images directory exists, creating it if necessary
+ * @function ensureDirectoryExists
+ * @returns {void}
+ */
 function ensureDirectoryExists() {
     if (!fs.existsSync(IMAGES_DIR)) {
         fs.mkdirSync(IMAGES_DIR, { recursive: true });
@@ -51,7 +72,14 @@ function ensureDirectoryExists() {
     }
 }
 
-// Download a single image
+/**
+ * Downloads a single image from a URL and saves it to the images directory
+ * @async
+ * @function downloadImage
+ * @param {string} url - The URL of the image to download
+ * @param {string} filename - The filename to save the image as
+ * @returns {Promise<void>} - Resolves when the download is complete
+ */
 async function downloadImage(url, filename) {
     const filePath = path.join(IMAGES_DIR, filename);
 
@@ -95,7 +123,12 @@ async function downloadImage(url, filename) {
     });
 }
 
-// Download all sample images
+/**
+ * Downloads all sample images defined in the SAMPLE_IMAGES array
+ * @async
+ * @function downloadAllImages
+ * @returns {Promise<void>} - Resolves when all downloads are complete
+ */
 async function downloadAllImages() {
     ensureDirectoryExists();
 
