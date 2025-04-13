@@ -70,9 +70,21 @@ Thumbs.db
 logs
 *.log
 
-# Image files
+# Image files - ignore all files in images directory and subdirectories
 public/images/*
 !public/images/.gitkeep
 !public/images/original/
 public/images/original/*
 !public/images/original/.gitkeep
+
+# Explicitly ignore common image formats in case they're added elsewhere
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.bmp
+*.tiff
+*.tif
+*.svg
+*.ico
