@@ -7,29 +7,35 @@
 /* Thumbnail container grid */
 #thumbnail-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--thumbnail-size, 200px), 1fr));
-    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(var(--thumbnail-size, 160px), 1fr));
+    grid-gap: 16px;
     justify-items: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 0.75rem;
 }
 
 /* Thumbnail styles */
 .thumbnail-item {
     position: relative;
-    width: var(--thumbnail-size, 200px);
-    height: var(--thumbnail-size, 200px);
+    width: var(--thumbnail-size, 160px);
+    height: var(--thumbnail-size, 160px);
     overflow: hidden;
-    border-radius: 0.5rem;
-    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    border: 3px solid transparent;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
 .thumbnail-item:hover {
     transform: scale(1.05);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .thumbnail-item.selected {
     border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Thumbnail image container for positioning spinner */
@@ -81,12 +87,13 @@
 
 .thumbnail-checkbox {
     position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 20px;
-    height: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 3px;
+    top: 10px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    border-radius: 6px;
     cursor: pointer;
     z-index: 10;
     display: flex;
@@ -96,17 +103,29 @@
     margin: 0;
     appearance: none;
     -webkit-appearance: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.thumbnail-checkbox:hover {
+    background-color: rgba(255, 255, 255, 1);
+    border-color: rgba(59, 130, 246, 0.8);
 }
 
 .thumbnail-checkbox:checked {
     background-color: #3b82f6;
+    border-color: #3b82f6;
 }
 
 .thumbnail-checkbox:checked::after {
     content: '✓';
     color: white;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: bold;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .thumbnail-name {
@@ -114,14 +133,18 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 4px;
-    font-size: 0.7rem;
-    background-color: rgba(0, 0, 0, 0.7);
+    padding: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: rgba(0, 0, 0, 0.75);
     color: white;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    backdrop-filter: blur(4px);
 }
 body {
     font-family: 'Inter', sans-serif; /* Use Inter font */
@@ -132,12 +155,12 @@ body {
 #fullscreen-container:-webkit-full-screen {
     width: 100%;
     height: 100%;
-    background-color: var(--bg-color, #2e2e2e); /* 18% grey */
+    background-color: var(--bg-color, #000000); 
 }
 #fullscreen-container:fullscreen {
     width: 100%;
     height: 100%;
-    background-color: var(--bg-color, #2e2e2e); /* 18% grey */
+    background-color: var(--bg-color, #000000); 
 }
 
 /* Style for the image display */

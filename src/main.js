@@ -14,6 +14,7 @@
 
 import './style.css';
 import config from './config.js';
+import { initializeToggleSwitches } from './toggle-switch.js';
 
 /**
  * Loading Overlay Management
@@ -935,6 +936,17 @@ async function initializeApp() {
     if (folderImages.length > 0) {
         showMessage(`Loaded ${folderImages.length} images from the images folder.`);
     }
+
+    // Initialize custom UI components
+    initializeToggleSwitches();
+
+    // Update color preview when background color changes
+    bgColorInput.addEventListener('input', (e) => {
+        const colorPreview = document.querySelector('#controls-container .flex-1 .w-full');
+        if (colorPreview) {
+            colorPreview.style.backgroundColor = e.target.value;
+        }
+    });
 
     // Hide the loading overlay once everything is initialized
     hideLoadingOverlay();

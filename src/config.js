@@ -57,7 +57,7 @@ const baseConfig = {
         minDuration: 1,
 
         // Default background color
-        defaultBackgroundColor: '#2e2e2e',
+        defaultBackgroundColor: '#000000',
 
         // Fade transition duration in milliseconds
         fadeTransitionDuration: 250,
@@ -76,7 +76,7 @@ const baseConfig = {
      */
     ui: {
         // Thumbnail size in pixels
-        thumbnailSize: 200,
+        thumbnailSize: 160,
 
         // Menu hide delay in milliseconds
         menuHideDelay: 300,
