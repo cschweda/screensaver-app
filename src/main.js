@@ -67,16 +67,11 @@ const startButton = document.getElementById('start-button');
 const fullscreenContainer = document.getElementById('fullscreen-container');
 const imageDisplay = document.getElementById('image-display');
 const imageInfo = document.getElementById('image-info');
-const cornerMenu = document.getElementById('corner-menu');
 const exitButton = document.getElementById('exit-button');
 const restartButton = document.getElementById('restart-button');
-const cornerZones = document.querySelectorAll('.corner-zone');
 const bgColorInput = document.getElementById('bg-color-input');
 const messageBox = document.getElementById('message-box');
-// Container for fullscreen elements - used in multiple functions for DOM manipulation
-// This variable is used in displayImage() function for adding/removing CSS classes and DOM manipulation
-// The IDE may show a warning that it's unused, but it is actually used in the code
-const fullscreenElements = document.getElementById('fullscreen-elements');
+
 const loadingIndicator = document.getElementById('loading-indicator');
 
 /**
@@ -103,9 +98,7 @@ let slideshowInterval;
 /** Default duration in milliseconds between image transitions
  * @type {number} */
 let displayDuration = 5000;
-/** Timeout ID for hiding the menu
- * @type {number|null} */
-let menuTimeout;
+
 /** Flag to track if images should be displayed in random order
  * @type {boolean} */
 let randomizeOrder = false;
@@ -132,103 +125,7 @@ function showMessage(message, duration = config.ui.messageDisplayDuration) {
     }, duration);
 }
 
-/**
- * Compresses an image if it's larger than the specified size
- * This function is kept for reference but is not currently used.
- * Image compression is now handled by the server-side script.
- *
- * @function compressImageIfNeeded
- * @async
- * @param {string} imageUrl - The URL of the image to compress
- * @param {string} imageName - The name of the image
- * @param {number} [maxSizeInMB=1] - Maximum size in MB before compression
- * @returns {Promise<Object>} - Object containing the compressed image URL and metadata
- * @deprecated - Use server-side compression instead
- */
-async function compressImageIfNeeded(imageUrl, imageName, maxSizeInMB = 1) {
-    try {
-        // Fetch the image to check its size
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const originalSizeInMB = blob.size / (1024 * 1024);
-
-        // If the image is smaller than the max size, return the original
-        if (originalSizeInMB <= maxSizeInMB) {
-            return {
-                url: imageUrl,
-                name: imageName,
-                size: originalSizeInMB.toFixed(2),
-                compressed: false
-            };
-        }
-
-        // Create an image element to load the image
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-                // Create a canvas to compress the image
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
-                // Calculate the new dimensions while maintaining aspect ratio
-                // For large images, we'll reduce the dimensions to improve compression
-                let width = img.width;
-                let height = img.height;
-
-                // Scale down very large images more aggressively
-                const scaleFactor = originalSizeInMB > 5 ? 0.5 : 0.7;
-
-                width = Math.floor(width * scaleFactor);
-                height = Math.floor(height * scaleFactor);
-
-                // Set canvas dimensions
-                canvas.width = width;
-                canvas.height = height;
-
-                // Draw the image on the canvas with the new dimensions
-                ctx.drawImage(img, 0, 0, width, height);
-
-                // Convert the canvas to a Blob with reduced quality
-                const quality = originalSizeInMB > 5 ? 0.6 : 0.8;
-
-                canvas.toBlob((compressedBlob) => {
-                    if (!compressedBlob) {
-                        reject(new Error('Failed to compress image'));
-                        return;
-                    }
-
-                    // Create a URL for the compressed blob
-                    const compressedUrl = URL.createObjectURL(compressedBlob);
-                    const compressedSizeInMB = compressedBlob.size / (1024 * 1024);
-
-                    // Return the compressed image info
-                    resolve({
-                        url: compressedUrl,
-                        name: `${imageName} (compressed)`,
-                        originalSize: originalSizeInMB.toFixed(2),
-                        size: compressedSizeInMB.toFixed(2),
-                        compressed: true,
-                        compressionRatio: (originalSizeInMB / compressedSizeInMB).toFixed(1)
-                    });
-                }, 'image/jpeg', quality);
-            };
-
-            img.onerror = () => {
-                reject(new Error(`Failed to load image: ${imageName}`));
-            };
-
-            img.src = imageUrl;
-        });
-    } catch (error) {
-        console.error('Error compressing image:', error);
-        // Return the original image if compression fails
-        return {
-            url: imageUrl,
-            name: imageName,
-            compressed: false
-        };
-    }
-}
+// Deprecated compressImageIfNeeded function removed - compression is now handled server-side
 
 /**
  * Loads images from the images folder and creates thumbnails
@@ -637,7 +534,7 @@ restartButton.addEventListener('click', () => {
         displayImage(currentImageIndex); // Show first image immediately (already in fullscreen)
         startSlideshow(); // Start new cycle
     }
-    hideMenu(); // Hide menu after action
+    // Menu functionality removed - using Escape key only for exiting fullscreen
 });
 
 // Handle fullscreen change events (browser exit, e.g., Esc key)
@@ -658,39 +555,110 @@ document.addEventListener('keydown', (event) => {
                 break;
             case 'Escape': // Already handled by browser for exiting fullscreen
                 break;
-            case 'm':
-            case 'M':
-                // Toggle menu
-                if (cornerMenu.style.display === 'block') {
-                    hideMenu();
-                } else {
-                    showMenu();
-                }
-                break;
+            // Menu toggle functionality removed - using Escape key only for exiting fullscreen
         }
     }
 });
 
-// Handle mouse entering corner zones (only in fullscreen)
-cornerZones.forEach(zone => {
-    zone.addEventListener('mouseenter', () => {
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-            showMenu();
-        }
-    });
-});
-
-// Handle mouse leaving the menu itself
-cornerMenu.addEventListener('mouseleave', () => {
-    hideMenu();
-});
+// Corner menu functionality removed - using Escape key only for exiting fullscreen
 
 /**
  * Core Logic Functions
  */
 
 /**
- * Displays an image at the specified index
+ * Fades out the current image
+ * @function fadeOutCurrentImage
+ * @returns {void}
+ */
+function fadeOutCurrentImage() {
+    imageDisplay.classList.add('fade-out');
+    imageDisplay.classList.remove('fade-in');
+}
+
+/**
+ * Fades in the current image
+ * @function fadeInCurrentImage
+ * @returns {void}
+ */
+function fadeInCurrentImage() {
+    imageDisplay.classList.remove('fade-out');
+    imageDisplay.classList.add('fade-in');
+}
+
+/**
+ * Shows the loading indicator
+ * @function showLoadingIndicator
+ * @returns {void}
+ */
+function showLoadingIndicator() {
+    loadingIndicator.style.display = 'block';
+}
+
+/**
+ * Hides the loading indicator
+ * @function hideLoadingIndicator
+ * @returns {void}
+ */
+function hideLoadingIndicator() {
+    loadingIndicator.style.display = 'none';
+}
+
+/**
+ * Updates the image display with the given URL and name
+ * @function updateImageDisplay
+ * @param {string} imageUrl - The URL of the image to display
+ * @param {string} imageName - The name of the image to display
+ * @returns {void}
+ */
+function updateImageDisplay(imageUrl, imageName) {
+    imageDisplay.src = imageUrl;
+    imageDisplay.alt = imageName;
+    imageInfo.textContent = imageName;
+}
+
+/**
+ * Handles the case when an image fails to load
+ * @function handleImageLoadError
+ * @param {string} imageUrl - The URL of the image that failed to load
+ * @param {string} imageName - The name of the image that failed to load
+ * @returns {void}
+ */
+function handleImageLoadError(imageUrl, imageName) {
+    hideLoadingIndicator();
+    console.error("Error loading image:", imageUrl);
+
+    // Use the error image template from config
+    const fallbackUrl = config.placeholders.errorImageTemplate.replace('{bgColor}', bgColorInput.value.substring(1));
+
+    // After the fade-out is complete, update with error image
+    setTimeout(() => {
+        imageDisplay.src = fallbackUrl;
+        imageInfo.textContent = `Error loading: ${imageName}`;
+        fadeInCurrentImage();
+    }, config.display.fadeTransitionDuration);
+}
+
+/**
+ * Handles the case when no images are available
+ * @function handleNoImages
+ * @returns {void}
+ */
+function handleNoImages() {
+    hideLoadingIndicator();
+    fadeOutCurrentImage();
+
+    setTimeout(() => {
+        // Use the no images template from config
+        const fallbackUrl = config.placeholders.noImagesTemplate.replace('{bgColor}', bgColorInput.value.substring(1));
+        imageDisplay.src = fallbackUrl;
+        imageInfo.textContent = '';
+        fadeInCurrentImage();
+    }, config.display.fadeTransitionDuration);
+}
+
+/**
+ * Displays an image at the specified index using requestAnimationFrame for smoother transitions
  * @function displayImage
  * @param {number} index - The index of the image to display
  * @returns {void}
@@ -702,74 +670,31 @@ function displayImage(index) {
         const imageUrl = getImageUrl(index);
         const imageName = getImageName(index);
 
-        // Show loading indicator
-        loadingIndicator.style.display = 'block';
-
-        // First fade out the current image
-        imageDisplay.classList.add('fade-out');
-        imageDisplay.classList.remove('fade-in');
+        showLoadingIndicator();
+        fadeOutCurrentImage();
 
         // Create and preload the next image
         const nextImage = new Image();
         nextImage.onload = () => {
-            // Hide loading indicator once image is loaded
-            loadingIndicator.style.display = 'none';
+            hideLoadingIndicator();
 
-            // After the fade-out is complete, update the image and fade it back in
-            setTimeout(() => {
-                // Update the image source and info
-                imageDisplay.src = imageUrl;
-                imageDisplay.alt = imageName;
-                imageInfo.textContent = imageName;
-
-                // Calculate optimal size for the image based on its natural dimensions
-                // This will be handled by CSS now with our improved layout
-
-                // Fade the image back in
-                imageDisplay.classList.remove('fade-out');
-                imageDisplay.classList.add('fade-in');
-            }, 250); // Half the transition time for a smoother experience
+            // Use requestAnimationFrame for smoother transitions
+            requestAnimationFrame(() => {
+                // After the fade-out is complete, update the image and fade it back in
+                setTimeout(() => {
+                    updateImageDisplay(imageUrl, imageName);
+                    fadeInCurrentImage();
+                }, 250); // Half the transition time for a smoother experience
+            });
         };
 
         nextImage.onerror = () => {
-            // Hide loading indicator on error
-            loadingIndicator.style.display = 'none';
-
-            console.error("Error loading image:", imageUrl);
-            // Use the error image template from config
-            const fallbackUrl = config.placeholders.errorImageTemplate.replace('{bgColor}', bgColorInput.value.substring(1));
-
-            // After the fade-out is complete, update with error image
-            setTimeout(() => {
-                imageDisplay.src = fallbackUrl;
-                imageInfo.textContent = `Error loading: ${imageName}`;
-
-                // Fade the image back in
-                imageDisplay.classList.remove('fade-out');
-                imageDisplay.classList.add('fade-in');
-            }, config.display.fadeTransitionDuration);
+            handleImageLoadError(imageUrl, imageName);
         };
 
         nextImage.src = imageUrl;
-
     } else if (imageList.length === 0) {
-        // Hide loading indicator
-        loadingIndicator.style.display = 'none';
-
-        // Fade out current image
-        imageDisplay.classList.add('fade-out');
-        imageDisplay.classList.remove('fade-in');
-
-        setTimeout(() => {
-            // Use the no images template from config
-            const fallbackUrl = config.placeholders.noImagesTemplate.replace('{bgColor}', bgColorInput.value.substring(1));
-            imageDisplay.src = fallbackUrl;
-            imageInfo.textContent = '';
-
-            // Fade the image back in
-            imageDisplay.classList.remove('fade-out');
-            imageDisplay.classList.add('fade-in');
-        }, config.display.fadeTransitionDuration);
+        handleNoImages();
     }
 }
 
@@ -946,42 +871,17 @@ function handleFullscreenChange() {
 
         // Start the slideshow
         startSlideshow();
-        hideMenu(); // Ensure menu is hidden initially
+        // Menu functionality removed - using Escape key only for exiting fullscreen
     } else {
         // Exited fullscreen
         stopSlideshow();
-        hideMenu(); // Ensure menu is hidden
+        // Menu functionality removed - using Escape key only for exiting fullscreen
         // Clear the preloaded images cache when exiting
         preloadedImages = {};
     }
 }
 
-/**
- * Shows the corner menu
- * @function showMenu
- * @returns {void}
- */
-function showMenu() {
-    clearTimeout(menuTimeout); // Clear any pending hide timeout
-    cornerMenu.style.display = 'block';
-}
-
-/**
- * Hides the corner menu with a slight delay
- * @function hideMenu
- * @returns {void}
- */
-function hideMenu() {
-    // Hide slightly delayed to allow moving mouse from zone to menu
-    menuTimeout = setTimeout(() => {
-        cornerMenu.style.display = 'none';
-    }, config.ui.menuHideDelay);
-}
-
-// Prevent mouse leaving menu from immediately hiding if re-entering quickly
-cornerMenu.addEventListener('mouseenter', () => {
-    clearTimeout(menuTimeout);
-});
+// Corner menu functionality removed - using Escape key only for exiting fullscreen
 
 
 /**

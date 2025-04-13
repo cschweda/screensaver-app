@@ -152,31 +152,7 @@ body {
     position: relative; /* Ensure proper stacking */
 }
 
-/* Corner hover zones */
-.corner-zone {
-    position: absolute;
-    width: 80px; /* Increased size for easier hover */
-    height: 80px; /* Increased size for easier hover */
-    /* background-color: rgba(255, 0, 0, 0.1); */ /* Uncomment for debugging */
-    z-index: 100; /* Ensure they are above the image */
-}
-#top-left-zone { top: 0; left: 0; }
-#top-right-zone { top: 0; right: 0; }
-#bottom-left-zone { bottom: 0; left: 0; }
-#bottom-right-zone { bottom: 0; right: 0; }
-
-/* Corner menu */
-#corner-menu {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 0.5rem; /* rounded-lg */
-    padding: 1rem; /* p-4 */
-    z-index: 110; /* Above corner zones */
-    display: none; /* Hidden by default */
-    color: white;
-}
+/* Corner menu functionality removed - using Escape key only for exiting fullscreen */
 
 /* Hide controls when in fullscreen */
 #fullscreen-container:fullscreen #controls-container {
