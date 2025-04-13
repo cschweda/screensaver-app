@@ -4,13 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/compress-images.js",
+    "predev": "node scripts/update-api-images.js && node scripts/compress-images.js",
     "dev": "vite",
-    "prebuild": "node scripts/compress-images.js",
+    "prebuild": "node scripts/update-api-images.js && node scripts/compress-images.js",
     "build": "vite build",
     "preview": "vite preview",
     "compress": "node scripts/compress-images.js",
     "download-samples": "node scripts/download-sample-images.js",
+    "reindex": "node scripts/update-api-images.js",
     "docs": "jsdoc -c jsdoc.json"
   },
   "devDependencies": {

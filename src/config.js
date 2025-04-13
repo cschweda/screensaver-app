@@ -21,6 +21,7 @@ const baseConfig = {
      * @property {string[]} supportedFormats - List of supported image file extensions
      * @property {number} maxSizeMB - Maximum size in MB before compression
      * @property {number} compressionQuality - JPEG compression quality (0-100)
+     * @property {number} sampleImageCount - Number of sample images to download
      */
     images: {
         // Default directory for images
@@ -33,7 +34,10 @@ const baseConfig = {
         maxSizeMB: 1,
 
         // Compression quality (0-100)
-        compressionQuality: 80
+        compressionQuality: 80,
+
+        // Number of sample images to download
+        sampleImageCount: 25
     },
 
     /**
@@ -131,21 +135,36 @@ const baseConfig = {
  * @returns {string} The current environment (development, production, or test)
  */
 function getCurrentEnvironment() {
-    // Check for environment variables (when using bundlers that support it)
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV) {
-        return process.env.NODE_ENV;
+    // Check if we're in a Node.js environment
+    const isNode = typeof window === 'undefined' && typeof process !== 'undefined';
+
+    // Node.js environment
+    if (isNode) {
+        if (process.env && process.env.NODE_ENV) {
+            return process.env.NODE_ENV;
+        }
+        // Default to development in Node.js if not specified
+        return 'development';
     }
 
-    // Check for URL parameters (useful for testing)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('env')) {
-        return urlParams.get('env');
-    }
+    // Browser environment
+    else {
+        // Check for environment variables (when using bundlers that support it)
+        if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV) {
+            return process.env.NODE_ENV;
+        }
 
-    // Default to development if running on localhost, otherwise production
-    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'development'
-        : 'production';
+        // Check for URL parameters (useful for testing)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('env')) {
+            return urlParams.get('env');
+        }
+
+        // Default to development if running on localhost, otherwise production
+        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'development'
+            : 'production';
+    }
 }
 
 /**
@@ -295,7 +314,8 @@ const configSchema = {
         directory: { type: 'string', required: true },
         supportedFormats: { type: 'array', required: true, itemType: 'string' },
         maxSizeMB: { type: 'number', required: true, min: 0.1, max: 10 },
-        compressionQuality: { type: 'number', required: true, min: 1, max: 100 }
+        compressionQuality: { type: 'number', required: true, min: 1, max: 100 },
+        sampleImageCount: { type: 'number', required: true, min: 5, max: 100 }
     },
     display: {
         defaultDuration: { type: 'number', required: true, min: 1, max: 60 },
@@ -326,7 +346,8 @@ const environments = {
         images: {
             directory: '/images/',
             maxSizeMB: 2, // More lenient in development
-            compressionQuality: 90 // Higher quality in development
+            compressionQuality: 90, // Higher quality in development
+            sampleImageCount: 30 // More sample images in development
         },
         ui: {
             messageDisplayDuration: 5000 // Longer messages in development
@@ -335,7 +356,8 @@ const environments = {
     production: {
         images: {
             maxSizeMB: 1, // Stricter in production
-            compressionQuality: 80 // Balance quality and size in production
+            compressionQuality: 80, // Balance quality and size in production
+            sampleImageCount: 20 // Fewer sample images in production
         },
         ui: {
             messageDisplayDuration: 3000 // Standard message duration in production

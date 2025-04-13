@@ -49,8 +49,11 @@ Place your images in the `public/images` directory. The application will automat
 4. Use the compressed versions for display
 
 ```bash
-# Optional: Download sample large images for testing
+# Optional: Download 20 sample images for testing
 yarn download-samples
+
+# If you add or remove images manually, reindex them
+yarn reindex
 ```
 
 ### Development
@@ -61,8 +64,9 @@ yarn dev
 ```
 
 This will:
-1. Run the image compression script on any images over 1MB
-2. Start the development server at http://localhost:3000
+1. Generate the api-images.json file with a list of all images
+2. Run the image compression script on any images over 1MB
+3. Start the development server at http://localhost:3000
 
 ### Building for Production
 
@@ -85,6 +89,7 @@ All application settings are centralized in the `src/config.js` file. You can cu
 | `images.supportedFormats` | `['.jpg', '.jpeg', '.png', '.webp', '.gif']` | Supported image file formats |
 | `images.maxSizeMB` | `1` | Maximum size in MB before compression |
 | `images.compressionQuality` | `80` | JPEG compression quality (0-100) |
+| `images.sampleImageCount` | `25` | Number of sample images to download |
 
 ### Display Settings
 

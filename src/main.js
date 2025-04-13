@@ -150,13 +150,16 @@ async function loadImagesFromFolder() {
         let folderImageFiles = [];
 
         try {
-            // Try to fetch the list of images from the public/images directory
-            const response = await fetch('/api/images');
+            // Try to fetch the list of images from the JSON file
+            const response = await fetch('/api-images.json');
             if (response.ok) {
                 folderImageFiles = await response.json();
+                console.log('Loaded images from JSON file:', folderImageFiles);
+            } else {
+                console.warn('Could not fetch images from JSON file, status:', response.status);
             }
         } catch (error) {
-            console.warn('Could not fetch images from API, using sample images instead:', error);
+            console.warn('Could not fetch images from JSON file, using sample images instead:', error);
         }
 
         // If no images were found in the folder, use sample images
@@ -604,18 +607,7 @@ function hideLoadingIndicator() {
     loadingIndicator.style.display = 'none';
 }
 
-/**
- * Updates the image display with the given URL and name
- * @function updateImageDisplay
- * @param {string} imageUrl - The URL of the image to display
- * @param {string} imageName - The name of the image to display
- * @returns {void}
- */
-function updateImageDisplay(imageUrl, imageName) {
-    imageDisplay.src = imageUrl;
-    imageDisplay.alt = imageName;
-    imageInfo.textContent = imageName;
-}
+// updateImageDisplay function removed - now handled directly in displayImage
 
 /**
  * Handles the case when an image fails to load
@@ -664,11 +656,14 @@ function handleNoImages() {
  * @returns {void}
  */
 function displayImage(index) {
+    console.log(`Displaying image at index ${index}`); // Debug log
     const imageList = getCurrentImageList();
+    console.log(`Current image list length: ${imageList.length}`); // Debug log
 
     if (index >= 0 && index < imageList.length) {
         const imageUrl = getImageUrl(index);
         const imageName = getImageName(index);
+        console.log(`Loading image: ${imageName} from ${imageUrl}`); // Debug log
 
         showLoadingIndicator();
         fadeOutCurrentImage();
@@ -676,25 +671,38 @@ function displayImage(index) {
         // Create and preload the next image
         const nextImage = new Image();
         nextImage.onload = () => {
+            console.log(`Image loaded successfully: ${imageUrl}`); // Debug log
             hideLoadingIndicator();
 
-            // Use requestAnimationFrame for smoother transitions
-            requestAnimationFrame(() => {
-                // After the fade-out is complete, update the image and fade it back in
-                setTimeout(() => {
-                    updateImageDisplay(imageUrl, imageName);
-                    fadeInCurrentImage();
-                }, 250); // Half the transition time for a smoother experience
-            });
+            // Update the image display directly
+            imageDisplay.src = imageUrl;
+            imageDisplay.alt = imageName || 'Screensaver Image';
+
+            // Make sure the image is visible
+            imageDisplay.style.display = 'block';
+
+            // Update the image info text
+            if (imageInfo) {
+                imageInfo.textContent = imageName || '';
+            }
+
+            // Fade the image back in
+            fadeInCurrentImage();
+            console.log('Image display updated successfully'); // Debug log
         };
 
         nextImage.onerror = () => {
+            console.error(`Failed to load image: ${imageUrl}`); // Debug log
+            hideLoadingIndicator();
             handleImageLoadError(imageUrl, imageName);
         };
 
         nextImage.src = imageUrl;
     } else if (imageList.length === 0) {
+        console.log('No images to display'); // Debug log
         handleNoImages();
+    } else {
+        console.error(`Invalid image index: ${index}, list length: ${imageList.length}`); // Debug log
     }
 }
 

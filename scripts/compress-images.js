@@ -419,5 +419,28 @@ async function processImages() {
     }
 }
 
-// Run the script
-processImages().catch(console.error);
+/**
+ * Runs the generate-api-images.js script to update the api-images.json file
+ * @function updateApiImagesJson
+ * @async
+ * @returns {Promise<void>}
+ */
+async function updateApiImagesJson() {
+    try {
+        console.log('\nUpdating api-images.json file...');
+        // Import and run the generate-api-images.js script
+        const generateApiImagesModule = await import('./generate-api-images.js');
+        // The module should automatically run when imported
+        console.log('api-images.json updated successfully.');
+    } catch (error) {
+        console.error('Error updating api-images.json:', error.message);
+    }
+}
+
+// Run the scripts
+async function main() {
+    await processImages();
+    await updateApiImagesJson();
+}
+
+main().catch(console.error);
